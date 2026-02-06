@@ -23,6 +23,11 @@ MULTI_EXTENSIONS = [
     ".txz",
 ]
 
+WINDOWS_7Z_PATHS = [
+    Path("C:/Program Files/7-Zip/7z.exe"),
+    Path("C:/Program Files (x86)/7-Zip/7z.exe"),
+]
+
 
 def find_7z() -> str | None:
     """Return the 7z executable path if available."""
@@ -30,6 +35,11 @@ def find_7z() -> str | None:
         path = shutil.which(candidate)
         if path:
             return path
+
+    if os.name == "nt":
+        for candidate in WINDOWS_7Z_PATHS:
+            if candidate.exists():
+                return str(candidate)
     return None
 
 
@@ -99,7 +109,7 @@ def main() -> int:
     seven_zip = find_7z()
     if not seven_zip:
         print(
-            "7-Zip command not found. Install p7zip (brew install p7zip) and try again.",
+            "7-Zip command not found. Install 7-Zip and try again.",
             file=sys.stderr,
         )
         return 1
