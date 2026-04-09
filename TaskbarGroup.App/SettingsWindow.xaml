@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Taskbar Group - Ayarlar"
         Height="420"
-        Width="560"
+        Width="700"
         WindowStartupLocation="CenterOwner">
     <Grid Margin="12">
         <Grid.RowDefinitions>
@@ -12,17 +12,21 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+        <WrapPanel Margin="0,0,0,10">
             <Button Content="EXE Ekle" Width="100" Margin="0,0,8,0" Click="AddExe_OnClick"/>
             <Button Content="UWP Ekle" Width="100" Margin="0,0,8,0" Click="AddUwp_OnClick"/>
+            <Button Content="UWP'leri Tara" Width="100" Margin="0,0,8,0" Click="DiscoverUwp_OnClick"/>
+            <Button Content="Yukarı" Width="100" Margin="0,0,8,0" Click="MoveUp_OnClick"/>
+            <Button Content="Aşağı" Width="100" Margin="0,0,8,0" Click="MoveDown_OnClick"/>
             <Button Content="Seçileni Sil" Width="100" Click="Remove_OnClick"/>
-        </StackPanel>
+        </WrapPanel>
 
         <DataGrid x:Name="ItemsGrid"
                   Grid.Row="1"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
-                  SelectionMode="Single">
+                  SelectionMode="Single"
+                  IsReadOnly="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Ad" Binding="{Binding DisplayName}" Width="1.2*"/>
                 <DataGridTextColumn Header="Tip" Binding="{Binding Type}" Width="0.6*"/>

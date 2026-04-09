@@ -9,6 +9,7 @@ namespace TaskbarGroup.App;
 public partial class SettingsWindow : Window
 {
     private readonly ConfigService _configService = new();
+    private readonly UwpDiscoveryService _uwpDiscoveryService = new();
     private readonly ObservableCollection<AppItem> _items;
 
     public SettingsWindow()
@@ -54,6 +55,65 @@ public partial class SettingsWindow : Window
         });
 
         MessageBox.Show("UWP satırı eklendi. Lütfen AUMID sütununu doldurun.", "Taskbar Group", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    private void DiscoverUwp_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var discovered = _uwpDiscoveryService.DiscoverApps();
+            var existing = _items.Where(i => i.Type.Equals("uwp", StringComparison.OrdinalIgnoreCase))
+                .Select(i => i.AppUserModelId)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var addedCount = 0;
+            foreach (var app in discovered)
+            {
+                if (existing.Contains(app.AppUserModelId))
+                {
+                    continue;
+                }
+
+                _items.Add(app);
+                addedCount++;
+            }
+
+            MessageBox.Show($"{addedCount} UWP uygulaması eklendi.", "Taskbar Group", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"UWP listesi alınamadı: {ex.Message}", "Taskbar Group", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void MoveUp_OnClick(object sender, RoutedEventArgs e)
+    {
+        MoveSelected(-1);
+    }
+
+    private void MoveDown_OnClick(object sender, RoutedEventArgs e)
+    {
+        MoveSelected(1);
+    }
+
+    private void MoveSelected(int direction)
+    {
+        if (ItemsGrid.SelectedItem is not AppItem selected)
+        {
+            return;
+        }
+
+        var index = _items.IndexOf(selected);
+        var newIndex = index + direction;
+
+        if (index < 0 || newIndex < 0 || newIndex >= _items.Count)
+        {
+            return;
+        }
+
+        _items.Move(index, newIndex);
+        ItemsGrid.SelectedItem = selected;
+        ItemsGrid.ScrollIntoView(selected);
     }
 
     private void Remove_OnClick(object sender, RoutedEventArgs e)

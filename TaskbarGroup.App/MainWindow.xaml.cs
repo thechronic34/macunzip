@@ -10,6 +10,7 @@ public partial class MainWindow : Window
     private readonly LauncherService _launcherService = new();
     private readonly TaskbarPositionService _taskbarPositionService = new();
     private AppConfig _config = new();
+    private bool _isOpeningSettings;
 
     public MainWindow()
     {
@@ -38,13 +39,18 @@ public partial class MainWindow : Window
 
     private void SettingsButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SettingsWindow
-        {
-            Owner = this
-        };
+        _isOpeningSettings = true;
 
-        settingsWindow.ShowDialog();
-        LoadItems();
+        try
+        {
+            var settingsWindow = new SettingsWindow();
+            settingsWindow.ShowDialog();
+            LoadItems();
+        }
+        finally
+        {
+            _isOpeningSettings = false;
+        }
     }
 
     private void RefreshButton_OnClick(object sender, RoutedEventArgs e)
@@ -73,6 +79,11 @@ public partial class MainWindow : Window
 
     private void Window_OnDeactivated(object? sender, EventArgs e)
     {
+        if (_isOpeningSettings)
+        {
+            return;
+        }
+
         Close();
     }
 }
