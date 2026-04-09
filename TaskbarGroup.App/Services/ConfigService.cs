@@ -13,6 +13,7 @@ public class ConfigService
     };
 
     public string ConfigPath { get; }
+    public string BackupPath { get; }
 
     public ConfigService()
     {
@@ -21,6 +22,7 @@ public class ConfigService
         Directory.CreateDirectory(configDir);
 
         ConfigPath = Path.Combine(configDir, "config.json");
+        BackupPath = Path.Combine(configDir, "config.backup.json");
     }
 
     public AppConfig Load()
@@ -39,14 +41,56 @@ public class ConfigService
         }
         catch
         {
-            return new AppConfig();
+            TryRestoreFromBackup();
+            return LoadBackupOrEmpty();
         }
     }
 
     public void Save(AppConfig config)
     {
         var json = JsonSerializer.Serialize(config, JsonOptions);
+
+        if (File.Exists(ConfigPath))
+        {
+            File.Copy(ConfigPath, BackupPath, overwrite: true);
+        }
+
         File.WriteAllText(ConfigPath, json);
+    }
+
+    private AppConfig LoadBackupOrEmpty()
+    {
+        try
+        {
+            if (!File.Exists(BackupPath))
+            {
+                return new AppConfig();
+            }
+
+            var json = File.ReadAllText(BackupPath);
+            return JsonSerializer.Deserialize<AppConfig>(json, JsonOptions) ?? new AppConfig();
+        }
+        catch
+        {
+            return new AppConfig();
+        }
+    }
+
+    private void TryRestoreFromBackup()
+    {
+        if (!File.Exists(BackupPath))
+        {
+            return;
+        }
+
+        try
+        {
+            File.Copy(BackupPath, ConfigPath, overwrite: true);
+        }
+        catch
+        {
+            // intentionally ignored for MVP
+        }
     }
 
     private static AppConfig CreateDefaultConfig() => new()

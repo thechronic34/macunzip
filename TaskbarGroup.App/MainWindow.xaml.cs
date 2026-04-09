@@ -8,27 +8,43 @@ public partial class MainWindow : Window
 {
     private readonly ConfigService _configService = new();
     private readonly LauncherService _launcherService = new();
+    private readonly TaskbarPositionService _taskbarPositionService = new();
     private AppConfig _config = new();
 
     public MainWindow()
     {
         InitializeComponent();
+        Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
         PositionNearTaskbar();
         LoadItems();
     }
 
     private void PositionNearTaskbar()
     {
-        // Basit MVP yaklaşımı: ekranın sağ alt kısmına yakın konumlandır.
-        var workArea = SystemParameters.WorkArea;
-        Left = workArea.Right - Width - 16;
-        Top = workArea.Bottom - Height - 16;
+        var position = _taskbarPositionService.CalculatePopupTopLeft(new Size(Width, Height));
+        Left = position.X;
+        Top = position.Y;
     }
 
     private void LoadItems()
     {
         _config = _configService.Load();
         AppListBox.ItemsSource = _config.Items;
+    }
+
+    private void SettingsButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var settingsWindow = new SettingsWindow
+        {
+            Owner = this
+        };
+
+        settingsWindow.ShowDialog();
+        LoadItems();
     }
 
     private void RefreshButton_OnClick(object sender, RoutedEventArgs e)
@@ -53,5 +69,10 @@ public partial class MainWindow : Window
         {
             MessageBox.Show($"Uygulama başlatılamadı: {ex.Message}", "Taskbar Group", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    private void Window_OnDeactivated(object? sender, EventArgs e)
+    {
+        Close();
     }
 }

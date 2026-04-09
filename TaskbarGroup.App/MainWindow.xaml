@@ -11,7 +11,8 @@
         WindowStartupLocation="Manual"
         Topmost="True"
         ShowInTaskbar="False"
-        WindowStyle="ToolWindow">
+        WindowStyle="ToolWindow"
+        Deactivated="Window_OnDeactivated">
     <Border Padding="12">
         <DockPanel>
             <TextBlock DockPanel.Dock="Top"
@@ -27,6 +28,10 @@
                         Margin="0,10,0,0"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right">
+                <Button Content="Ayarlar"
+                        Width="90"
+                        Margin="0,0,8,0"
+                        Click="SettingsButton_OnClick" />
                 <Button Content="Yenile"
                         Width="90"
                         Margin="0,0,8,0"

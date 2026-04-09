@@ -20,6 +20,16 @@ public partial class App : Application
 
         base.OnStartup(e);
 
+        var openSettings = e.Args.Any(a => a.Equals("--settings", StringComparison.OrdinalIgnoreCase));
+
+        if (openSettings)
+        {
+            var settingsWindow = new SettingsWindow();
+            MainWindow = settingsWindow;
+            settingsWindow.Show();
+            return;
+        }
+
         var mainWindow = new MainWindow();
         MainWindow = mainWindow;
         mainWindow.Show();
