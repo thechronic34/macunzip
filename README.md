@@ -67,3 +67,9 @@ Now double‑clicking a supported archive will extract it into a folder next to 
 
 - The script supports multiple files at once.
 - It works with most formats supported by 7‑Zip (zip, rar, 7z, tar, tar.gz, tar.xz, etc.).
+
+## TaskbarGroup.App manual UI test guide
+
+For the Windows taskbar-group launcher prototype, see:
+
+- `TaskbarGroup.App/TESTING_TR.md`
